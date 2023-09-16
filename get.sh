@@ -58,6 +58,9 @@ for details in "${RESULTS[@]}"; do
 	LINKS+=("$link")
 done
 
+# https://stackoverflow.com/a/59877763/9596267 (arrays cant be exported without a hack....)
+# Exporting $RESULTS for use in fzf --preview pane function `preview_book_details`
+export MY_ARRAY=$(IFS='|'; echo "${RESULTS[*]}")
 
 function get_index()
 {
@@ -65,17 +68,15 @@ function get_index()
 	echo $index
 }
 
-
-
-function get_result()
+function preview_book_details()
 {
-	echo "$1"
-	if [ -z $LINKS ]; then echo "NOTHING SET LMAO"; fi
-	echo "${LINKS[$1]}"
+	# https://stackoverflow.com/a/59877763/9596267
+	IFS='|'; RESULTS=($MY_ARRAY); unset IFS
+	echo "${RESULTS[$1]}"
 }
-# We need to export a function to be able to use it in fzf preview... But can i still access bash variables in exported functions ?
 
-export -f get_result
+# We need to export a function to be able to use it in fzf preview
+export -f preview_book_details
 
 
 # get selected link from books list
@@ -90,7 +91,7 @@ link=$(
 		--no-multi \
 		--border \
 		--header="Select Results for \"${BOOKNAME}\"" \
-		--preview='get_result {n}'
+		--preview='preview_book_details {n}'
 ) 
 
 # Exit if the user doesnt select any book
@@ -138,7 +139,7 @@ download_link=$(get_book_links $book_md5 \
 										--no-sort \
 										--no-multi \
 										--border \
-										--header="Select source url")
+										--header="Select Results for \"${BOOKNAME}\"")
 
 
 # DOWNLOAD THE PDF
