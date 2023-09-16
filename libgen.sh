@@ -17,11 +17,6 @@ else
 		echo "ERROR: File $OUTPUT_FILE already exists"
 		exit 1
 	fi
-
-	# "the code book" -> the # lmao
-	# echo $BOOKNAME
-	# echo $OUTPUT_FILE
-	# exit 0
 fi
 
 # Searching and Parsing the Results Table
@@ -45,6 +40,7 @@ declare -a TITLES
 declare -i counter=0
 # Looping over all the details to extract the `title` and `url`
 for details in "${RESULTS[@]}"; do
+
 	# Extracting title and links
 	title="$(echo "$details" | grep -o "title : \(.*\)$" | cut -d: -f2-)"
 	link="$(echo "$details" | grep -o "link : \(.*\)$" | cut -d: -f2-)"
@@ -72,6 +68,35 @@ function preview_book_details()
 	# https://stackoverflow.com/a/59877763/9596267
 	IFS='|'; RESULTS=($MY_ARRAY); unset IFS
 	echo "${RESULTS[$1]}"
+
+
+	link="$(echo "${RESULTS[$1]}" | grep -o "link : \(.*\)$" | cut -d: -f2-)"
+	md5=$(echo "$link" | cut -d "=" -f 2)
+
+	desc_url="http://library.lol/main/$md5"
+
+	# TODO: Check if directory exists, maybe use jq to store this info...
+
+	if [ -f "/tmp/libgen/$md5.html" ]; then
+		# Print
+		# ! Description doesnt work when the files are cached...
+		echo "$description" | fold -w $FZF_PREVIEW_COLUMNS
+		chafa "/tmp/libgen/$md5-img.jpg"
+	else
+		# GET desciption page
+		curl "$desc_url" -o /tmp/libgen/$md5.html --silent
+
+		# Extract description and img link
+		img_link=$(cat /tmp/libgen/$md5.html | pup 'img[src^="/covers/"] attr{src}')
+		description=$(cat /tmp/libgen/$md5.html | pup 'div:last-child text{}')
+
+		# Get Image from img_link
+		curl "http://library.lol$img_link" -o "/tmp/libgen/$md5-img.jpg" --silent
+
+		# Print
+		echo "$description" | fold -w $FZF_PREVIEW_COLUMNS
+		chafa "/tmp/libgen/$md5-img.jpg"
+	fi
 }
 
 # We need to export a function to be able to use it in fzf preview
