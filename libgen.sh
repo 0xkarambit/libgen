@@ -1,9 +1,8 @@
-# set -a
-# alias fzf="fzf --height 40% --layout=reverse --border" # HMM this didnt work.
+#!/bin/bash
 
-USAGE="Usage: get.sh BOOK OUTPUT_FILE"
+USAGE="Usage: libgen.sh BOOK OUTPUT_FILE"
 
-if ! [[ $# -eq 2 ]]; then
+if [[ $# -ne 2 ]]; then
 	echo $USAGE
 	exit 1
 else
