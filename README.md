@@ -15,7 +15,7 @@ cd libgen/
 
 ## Usage
 
-`./get.sh [BOOK] [OUTPUT_FILE]`
+`./get.sh BOOK OUTPUT_FILE`
 
 Example
 
@@ -23,13 +23,13 @@ Example
 
 ## Dependencies
 
-- fzf
-- pug
-- jq
+- [fzf](https://github.com/junegunn/fzf)
+- [pug](https://github.com/ericchiang/pup)
+- [jq](https://github.com/jqlang/jq)
 
 ## Roadmap
 
-- Show book info in fzf preview
-- Show book thumbnail in preview
-- Option to Download multiple books
-- Add option to silently download in background and BELL when finished
+- [ ] Show book info in fzf preview
+- [ ] Show book thumbnail in preview
+- [ ] Option to Download multiple books
+- [ ] Add option to silently download in background and BELL when finished
